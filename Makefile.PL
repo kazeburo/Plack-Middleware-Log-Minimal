@@ -3,6 +3,7 @@ name 'Plack-Middleware-Log-Minimal';
 all_from 'lib/Plack/Middleware/Log/Minimal.pm';
 
 # requires '';
+requires 'parent';
 requires 'Log::Minimal';
 requires 'Term::ANSIColor';
 requires 'Plack::Middleware';

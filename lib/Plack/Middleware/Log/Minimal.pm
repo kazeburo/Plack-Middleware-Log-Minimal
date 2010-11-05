@@ -2,7 +2,6 @@ package Plack::Middleware::Log::Minimal;
 use strict;
 use warnings;
 use parent qw(Plack::Middleware);
-use Plack::Util::Accessor qw(color);
 use Log::Minimal;
 use Term::ANSIColor qw//;
 
