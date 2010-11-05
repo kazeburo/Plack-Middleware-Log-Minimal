@@ -36,7 +36,7 @@ sub build_logger {
                  . $message . Term::ANSIColor::color("reset")
                  if $DEFAULT_COLOR->{lc($type)}->{background};
         }
-        warn("$time [$type] [$env->{REQUEST_URI}] $message at $trace\n");
+        $env->{'psgi.errors'}->print("$time [$type] [$env->{REQUEST_URI}] $message at $trace\n");
     };
 }
 

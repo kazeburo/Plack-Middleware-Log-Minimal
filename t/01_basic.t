@@ -18,37 +18,43 @@ my $app = builder {
 };
 
 {
-    my $warn = "";
-    $SIG{__WARN__} = sub { $warn .= join "", @_ };
+    my $warn;
     test_psgi
-        app => $app,
+        app => sub {
+            my $env = shift;
+            $env->{'psgi.errors'} = do { open my $io, ">", \$warn; $io };
+            $app->($env)
+        },
         client => sub {
             my $cb = shift;
             my $req = HTTP::Request->new(GET => "http://localhost/bar");
             my $res = $cb->($req);
             ok( $res->is_success );
        };
-    unlike $warn, qr/\[DEBUG\] \[\/bar\] debug/;
-    like $warn, qr/\[INFO\] \[\/bar\] info/;
-    like $warn, qr/\[WARN\] \[\/bar\] warn/;
-    like $warn, qr/\[CRITICAL\] \[\/bar\] crit/;
+    unlike $warn, qr/\[DEBUG\] \[\/bar\] debug /;
+    like $warn, qr/\[INFO\] \[\/bar\] info /;
+    like $warn, qr/\[WARN\] \[\/bar\] warn /;
+    like $warn, qr/\[CRITICAL\] \[\/bar\] crit /;
 }
 
 
 {
     $ENV{PLACK_ENV} = "development";
-    my $warn = "";
-    $SIG{__WARN__} = sub { $warn .= join "", @_ };
+    my $warn;
     test_psgi
-        app => $app,
+        app => sub {
+            my $env = shift;
+            $env->{'psgi.errors'} = do { open my $io, ">", \$warn; $io };
+            $app->($env)
+        },  
         client => sub {
             my $cb = shift;
             my $req = HTTP::Request->new(GET => "http://localhost/bar");
             my $res = $cb->($req);
             ok( $res->is_success );
        };
-    like $warn, qr/\[DEBUG\] \[\/bar\] .+?debug/;
-    like $warn, qr/\[INFO\] \[\/bar\] .+?info/;
+    like $warn, qr/\[DEBUG\] \[\/bar\] .+?debug.+? /;
+    like $warn, qr/\[INFO\] \[\/bar\] .+?info.+? /;
 }
 
 
