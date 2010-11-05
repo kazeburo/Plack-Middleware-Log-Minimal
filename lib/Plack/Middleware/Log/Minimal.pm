@@ -28,7 +28,7 @@ sub build_logger {
     my ($self, $env) = @_;
     return sub {
         my ( $time, $type, $message, $trace) = @_;
-        if ( $ENV{PLACK_ENV} eq 'development' ) {
+        if ( $ENV{PLACK_ENV} && $ENV{PLACK_ENV} eq 'development' ) {
              $message = Term::ANSIColor::color($DEFAULT_COLOR->{lc($type)}->{text}) 
                  . $message . Term::ANSIColor::color("reset")
                  if $DEFAULT_COLOR->{lc($type)}->{text};
@@ -36,7 +36,7 @@ sub build_logger {
                  . $message . Term::ANSIColor::color("reset")
                  if $DEFAULT_COLOR->{lc($type)}->{background};
         }
-        $env->{'psgi.errors'}->print("$time [$type] [$env->{REQUEST_URI}] $message at $trace\n");
+        warn("$time [$type] [$env->{REQUEST_URI}] $message at $trace\n");
     };
 }
 
@@ -48,7 +48,7 @@ sub prepare_app {
 sub call {
     my ($self, $env) = @_;
     local $Log::Minimal::PRINT = $self->build_logger($env);
-    local $ENV{$Log::Minimal::ENV_DEBUG} = ($ENV{PLACK_ENV} eq 'development') ? 1 : 0;
+    local $ENV{$Log::Minimal::ENV_DEBUG} = ($ENV{PLACK_ENV} && $ENV{PLACK_ENV} eq 'development') ? 1 : 0;
     $self->app->($env);
 }
 
