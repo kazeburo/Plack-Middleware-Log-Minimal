@@ -57,15 +57,35 @@ __END__
 
 =head1 NAME
 
-Plack::Middleware::Log::Minimal -
+Plack::Middleware::Log::Minimal - Log::Minimal middleware to prints to psgi.errors
 
 =head1 SYNOPSIS
 
-  use Plack::Middleware::Log::Minimal;
+  use Log::Minimal;
+  use Plack::Builder;
+
+  builder {
+      enable "Plack::Middleware::Log::Minimal";
+      sub {
+          my $env = shift;
+          debugf("debug message");
+          infof("infomation message");
+          warnf("warning message");
+          critf("critical message");
+          ["200",[ 'Content-Type' => 'text/plain' ],["OK"]];
+      };
+  };
+
+  # print "2010-10-20T00:25:17 [INFO] infomation message at example.psgi" to psgi.errors stream
 
 =head1 DESCRIPTION
 
-Plack::Middleware::Log::Minimal is
+Plack::Middleware::Log::Minimal is middleware that integrates with L<Log::Minimal>.
+When Log::Minimal log functions like warnf, infof or debugf were used in PSGI Application,
+this middleware adds requested URI to messages and prints that to psgi.errors stream.
+
+IF $ENV{PLACK_ENV} is "development", Plack::Middleware::Log::Minimal attach color to log using L<Term::ANSIColor>.
+
 
 =head1 AUTHOR
 
@@ -73,9 +93,13 @@ Masahiro Nagano E<lt>kazeburo {at} gmail.comE<gt>
 
 =head1 SEE ALSO
 
+L<Log::Minimal>, L<Term::ANSIColor>
+
 =head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =cut
+
+

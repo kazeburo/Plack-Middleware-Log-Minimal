@@ -8,3 +8,12 @@ __DATA__
 Masahiro Nagano
 kazeburo {at} gmail.com
 Plack::Middleware::Log::Minimal
+PSGI
+debugf
+exmple
+infof
+middleware
+psgi
+uri
+warnf
+
