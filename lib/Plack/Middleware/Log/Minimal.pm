@@ -6,7 +6,7 @@ use Plack::Util::Accessor qw( autodump loglevel formatter);
 use Log::Minimal 0.04;
 use Term::ANSIColor qw//;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 our $DEFAULT_COLOR = {
     info  => { text => 'green', },
