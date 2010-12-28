@@ -16,4 +16,5 @@ middleware
 psgi
 uri
 warnf
-
+autodump
+loglevel

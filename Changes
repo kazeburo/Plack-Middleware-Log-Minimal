@@ -1,4 +1,8 @@
 Revision history for Perl extension Plack::Middleware::Log::Minimal
 
+0.02    Wed Dec 29 00:53:38 2010
+        - customize fomatter, loglevel and autodump 
+        - requries Log::Minimal 0.04
+
 0.01    Thu Nov  4 23:39:39 2010
         - original version

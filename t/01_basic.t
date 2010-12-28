@@ -6,13 +6,14 @@ use Plack::Test;
 use Log::Minimal;
 
 my $app = builder {
-  enable 'Log::Minimal';
+  enable 'Log::Minimal',
+    autodump => 1;
   sub {
     my $env = shift;
     debugf("debug");
     infof("info");
     warnf("warn");
-    critf("crit");
+    critf("crit %s",{foo=>'bar'});
     ["200",[ 'Content-Type' => 'text/plain' ],["OK"]];
   }
 };
@@ -34,7 +35,7 @@ my $app = builder {
     unlike $warn, qr/\[DEBUG\] \[\/bar\] debug /;
     like $warn, qr/\[INFO\] \[\/bar\] info /;
     like $warn, qr/\[WARN\] \[\/bar\] warn /;
-    like $warn, qr/\[CRITICAL\] \[\/bar\] crit /;
+    like $warn, qr/\[CRITICAL\] \[\/bar\] crit {'foo'\s*=>\s*'bar'}/;
 }
 
 
