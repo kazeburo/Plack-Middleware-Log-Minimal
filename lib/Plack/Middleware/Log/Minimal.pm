@@ -5,8 +5,9 @@ use parent qw(Plack::Middleware);
 use Plack::Util::Accessor qw( autodump loglevel formatter);
 use Log::Minimal 0.04;
 use Term::ANSIColor qw//;
+use Encode;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 our $DEFAULT_COLOR = {
     info  => { text => 'green', },
@@ -29,6 +30,7 @@ sub build_logger {
     return sub {
         my ( $time, $type, $message, $trace) = @_;
         my $raw_message = $message;
+        $message = Encode::encode_utf8($message) if Encode::is_utf8($message);
         if ( $ENV{PLACK_ENV} && $ENV{PLACK_ENV} eq 'development' ) {
              $message = Term::ANSIColor::color($DEFAULT_COLOR->{lc($type)}->{text}) 
                  . $message . Term::ANSIColor::color("reset")

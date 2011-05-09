@@ -4,7 +4,7 @@ all_from 'lib/Plack/Middleware/Log/Minimal.pm';
 
 # requires '';
 requires 'parent';
-requires 'Log::Minimal', 0.04;
+requires 'Log::Minimal', 0.06;
 requires 'Term::ANSIColor';
 requires 'Plack::Middleware';
 
@@ -13,5 +13,5 @@ author_tests 'xt';
 
 test_requires 'Test::More';
 auto_set_repository;
-auto_include;
+#auto_include;
 WriteAll;

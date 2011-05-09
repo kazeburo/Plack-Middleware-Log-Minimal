@@ -11,6 +11,7 @@ my $app = builder {
     loglevel => 'WARN',
     formatter => sub {
         my ($env, $time, $type, $message, $trace, $raw_message) = @_;
+        ok( ! Encode::is_utf8($message) );
         "$time|$type|$message|$trace";
     };
   sub {
@@ -19,6 +20,8 @@ my $app = builder {
     infof("info");
     warnf("warn");
     critf("crit %s",{foo=>'bar'});
+    warnf("あ");
+    warnf("\x{306b}");
     ["200",[ 'Content-Type' => 'text/plain' ],["OK"]];
   }
 };

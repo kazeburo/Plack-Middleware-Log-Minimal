@@ -1,5 +1,8 @@
 Revision history for Perl extension Plack::Middleware::Log::Minimal
 
+0.03    Mon May 9 17:01:55 2011
+        - do encode_utf8 all message
+
 0.02    Wed Dec 29 00:53:38 2010
         - customize fomatter, loglevel and autodump 
         - requries Log::Minimal 0.04
