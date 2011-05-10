@@ -20,3 +20,5 @@ warnf
 autodump
 loglevel
 formatter
+utf
+

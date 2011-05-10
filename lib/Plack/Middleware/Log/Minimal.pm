@@ -2,12 +2,13 @@ package Plack::Middleware::Log::Minimal;
 use strict;
 use warnings;
 use parent qw(Plack::Middleware);
-use Plack::Util::Accessor qw( autodump loglevel formatter);
-use Log::Minimal 0.04;
+use Plack::Util::Accessor qw( autodump loglevel formatter encoding);
+use Log::Minimal 0.06;
 use Term::ANSIColor qw//;
+use Carp qw/croak/;
 use Encode;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 our $DEFAULT_COLOR = {
     info  => { text => 'green', },
@@ -30,7 +31,7 @@ sub build_logger {
     return sub {
         my ( $time, $type, $message, $trace) = @_;
         my $raw_message = $message;
-        $message = Encode::encode_utf8($message) if Encode::is_utf8($message);
+        $message = Encode::encode($self->encoding,$message) if Encode::is_utf8($message);
         if ( $ENV{PLACK_ENV} && $ENV{PLACK_ENV} eq 'development' ) {
              $message = Term::ANSIColor::color($DEFAULT_COLOR->{lc($type)}->{text}) 
                  . $message . Term::ANSIColor::color("reset")
@@ -50,6 +51,10 @@ sub prepare_app {
         my ($env, $time, $type, $message, $trace, $raw_message) = @_;
         sprintf "%s [%s] [%s] %s at %s\n", $time, $type, $env->{REQUEST_URI}, $message, $trace;
     }) unless $self->formatter;
+
+    my $encoding = find_encoding($self->encoding || 'utf8');
+    croak(sprintf 'encoding %s no found', $self->encoding) unless ref $encoding;
+    $self->encoding($encoding);
 }
 
 sub call {
@@ -125,6 +130,10 @@ Log format CODE reference. Default is.
 You can filter log messages and add more request information to message in this formatter CODE ref.
 $message includes Term color characters, If you want row message text, use $raw_message.
 
+=item encoding
+
+Encoding name to display log. This middleware encode (utf8 flagged) text log messages automatically.
+Default is utf8
 
 =back
 

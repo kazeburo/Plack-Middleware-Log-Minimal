@@ -1,5 +1,8 @@
 Revision history for Perl extension Plack::Middleware::Log::Minimal
 
+0.04    Tue May 10 10:16:47 2011
+        - made log encoding configurable
+
 0.03    Mon May 9 17:01:55 2011
         - do encode_utf8 all message
 
