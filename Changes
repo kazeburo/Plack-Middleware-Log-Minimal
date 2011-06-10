@@ -1,5 +1,8 @@
 Revision history for Perl extension Plack::Middleware::Log::Minimal
 
+0.05    Fri Jun 10 17:25:28 2011
+        - use Log::Minimal::COLOR
+
 0.04    Tue May 10 10:16:47 2011
         - made log encoding configurable
 

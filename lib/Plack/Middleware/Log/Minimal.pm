@@ -3,28 +3,11 @@ use strict;
 use warnings;
 use parent qw(Plack::Middleware);
 use Plack::Util::Accessor qw( autodump loglevel formatter encoding);
-use Log::Minimal 0.06;
-use Term::ANSIColor qw//;
+use Log::Minimal 0.08;
 use Carp qw/croak/;
 use Encode;
 
-our $VERSION = '0.04';
-
-our $DEFAULT_COLOR = {
-    info  => { text => 'green', },
-    debug => {
-        text       => 'red',
-        background => 'white',
-    },
-    'warn' => {
-        text       => 'black',
-        background => 'yellow',
-    },
-    'critical' => {
-        text       => 'black',
-        background => 'red'
-    }
-};
+our $VERSION = '0.05';
 
 sub build_logger {
     my ($self, $env) = @_;
@@ -32,14 +15,6 @@ sub build_logger {
         my ( $time, $type, $message, $trace) = @_;
         my $raw_message = $message;
         $message = Encode::encode($self->encoding,$message) if Encode::is_utf8($message);
-        if ( $ENV{PLACK_ENV} && $ENV{PLACK_ENV} eq 'development' ) {
-             $message = Term::ANSIColor::color($DEFAULT_COLOR->{lc($type)}->{text}) 
-                 . $message . Term::ANSIColor::color("reset")
-                 if $DEFAULT_COLOR->{lc($type)}->{text};
-             $message = Term::ANSIColor::color("on_".$DEFAULT_COLOR->{lc($type)}->{background}) 
-                 . $message . Term::ANSIColor::color("reset")
-                 if $DEFAULT_COLOR->{lc($type)}->{background};
-        }
         $env->{'psgi.errors'}->print($self->formatter->($env, $time, $type, $message, $trace, $raw_message));
     };
 }
@@ -62,6 +37,7 @@ sub call {
     local $Log::Minimal::PRINT = $self->build_logger($env);
     local $ENV{$Log::Minimal::ENV_DEBUG} = ($ENV{PLACK_ENV} && $ENV{PLACK_ENV} eq 'development') ? 1 : 0;
     local $Log::Minimal::AUTODUMP = 1 if $self->autodump;
+    local $Log::Minimal::COLOR = 1 if $ENV{PLACK_ENV} && $ENV{PLACK_ENV} eq 'development';
     local $Log::Minimal::LOG_LEVEL = $self->loglevel if $self->loglevel;
     $self->app->($env);
 }
@@ -98,7 +74,7 @@ Plack::Middleware::Log::Minimal is middleware that integrates with L<Log::Minima
 When Log::Minimal log functions like warnf, infof or debugf were used in PSGI Application,
 this middleware adds requested URI to messages and prints that to psgi.errors stream.
 
-IF $ENV{PLACK_ENV} is "development", Plack::Middleware::Log::Minimal attach color to log using L<Term::ANSIColor>.
+IF $ENV{PLACK_ENV} is "development", Plack::Middleware::Log::Minimal enable Log::Minimal::COLOR automatically.
 
 =head1 CONFIGURATIONS
 
@@ -143,7 +119,7 @@ Masahiro Nagano E<lt>kazeburo {at} gmail.comE<gt>
 
 =head1 SEE ALSO
 
-L<Log::Minimal>, L<Term::ANSIColor>
+L<Log::Minimal>
 
 =head1 LICENSE
 
