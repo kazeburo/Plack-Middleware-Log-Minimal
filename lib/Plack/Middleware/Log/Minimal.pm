@@ -3,17 +3,16 @@ use strict;
 use warnings;
 use parent qw(Plack::Middleware);
 use Plack::Util::Accessor qw( autodump loglevel formatter encoding);
-use Log::Minimal 0.08;
+use Log::Minimal 0.09;
 use Carp qw/croak/;
 use Encode;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub build_logger {
     my ($self, $env) = @_;
     return sub {
-        my ( $time, $type, $message, $trace) = @_;
-        my $raw_message = $message;
+        my ( $time, $type, $message, $trace, $raw_message) = @_;
         $message = Encode::encode($self->encoding,$message) if Encode::is_utf8($message);
         $env->{'psgi.errors'}->print($self->formatter->($env, $time, $type, $message, $trace, $raw_message));
     };
@@ -104,7 +103,7 @@ Log format CODE reference. Default is.
       });
 
 You can filter log messages and add more request information to message in this formatter CODE ref.
-$message includes Term color characters, If you want row message text, use $raw_message.
+$message includes Term color characters, If you want raw message text, use $raw_message.
 
 =item encoding
 

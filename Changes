@@ -1,5 +1,9 @@
 Revision history for Perl extension Plack::Middleware::Log::Minimal
 
+0.06    Tue Jul 26 13:32:44 2011
+        - bugfix: raw_message text had color seq, using Log::Minimal $raw_message
+        - requires Log::Minimal 0.09
+
 0.05    Fri Jun 10 17:25:28 2011
         - use Log::Minimal::COLOR
 

@@ -4,7 +4,7 @@ all_from 'lib/Plack/Middleware/Log/Minimal.pm';
 
 # requires '';
 requires 'parent';
-requires 'Log::Minimal', 0.08;
+requires 'Log::Minimal', 0.09;
 requires 'Plack::Middleware';
 
 tests 't/*.t';

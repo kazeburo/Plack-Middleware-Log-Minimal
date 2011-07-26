@@ -12,6 +12,7 @@ my $app = builder {
     formatter => sub {
         my ($env, $time, $type, $message, $trace, $raw_message) = @_;
         ok( ! Encode::is_utf8($message) );
+        unlike $raw_message, qr/\e\[/;
         "$time|$type|$message|$trace";
     };
   sub {
@@ -27,6 +28,7 @@ my $app = builder {
 };
 
 {
+    local $ENV{PLACK_ENV} = 'development';
     my $warn;
     test_psgi
         app => sub {
@@ -41,8 +43,8 @@ my $app = builder {
             ok( $res->is_success );
        };
     unlike $warn, qr/INFO\|info\|/;
-    like $warn, qr/WARN\|warn\|/;
-    like $warn, qr/CRITICAL\|crit {'foo'\s*=>\s*'bar'}\|/;
+    like $warn, qr/WARN\|\e\[.+?warn\e\[.+?|/;
+    like $warn, qr/CRITICAL\|\e\[.+?crit {'foo'\s*=>\s*'bar'}\e\[.+?\|/;
 }
 
 
